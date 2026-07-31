@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python compute_top_nifty_momentum.py)",
+      "Bash(python -c \"import pandas as pd; df=pd.read_parquet\\('daywise stocks/AARTIIND.parquet'\\); print\\(df.columns.tolist\\(\\)\\); print\\(df.head\\(2\\)\\); print\\(df.tail\\(2\\)\\)\")",
+      "Bash(python compute_top_alpha.py)",
+      "PowerShell(Get-NetAdapter | Where-Object {$_.Status -ne 'Disabled'} | Select-Object Name, InterfaceDescription, Status, LinkSpeed | Format-Table -AutoSize)",
+      "PowerShell(Get-NetIPConfiguration -InterfaceAlias 'Ethernet','WiFi' | ForEach-Object { \"`n=== $\\($_.InterfaceAlias\\) ===\"; $_.IPv4Address | Select-Object IPAddress, PrefixLength; \"Gateway : \" + \\($_.IPv4DefaultGateway.NextHop\\); \"DNS     : \" + \\(\\($_.DNSServer | Where-Object {$_.AddressFamily -eq 2}\\).ServerAddresses -join ', '\\) })",
+      "PowerShell(foreach \\($a in 'Ethernet','WiFi'\\) { $c = Get-NetIPConfiguration -InterfaceAlias $a; \"`n=== $a ===\"; \\($c.IPv4Address | Select-Object -ExpandProperty IPAddress\\) -join ', ' | ForEach-Object {\"IP      : $_\"}; \"Gateway : \" + $c.IPv4DefaultGateway.NextHop; \"DNS     : \" + \\(\\($c.DNSServer | Where-Object {$_.AddressFamily -eq 2}\\).ServerAddresses -join ', '\\) })",
+      "PowerShell(ping -S $eth -n 10 -w 1000 192.168.1.1)",
+      "PowerShell(Get-NetAdapterStatistics -Name 'Ethernet')",
+      "PowerShell($eth = '192.168.1.30')",
+      "PowerShell(\"-- 10 pings to gateway from Ethernet --\")",
+      "PowerShell(\"`n-- Ethernet error counters --\")",
+      "Bash(python alpha_bt.py)",
+      "Bash(PYTHONIOENCODING=utf-8 python alpha_bt.py)",
+      "Bash(python -c ' *)",
+      "Bash(python compute_top_quality.py)",
+      "Bash(python quality_bt.py)",
+      "Bash(PYTHONIOENCODING=utf-8 python quality_bt.py)",
+      "Bash(PYTHONIOENCODING=utf-8 python -c ' *)",
+      "Bash(PYTHONIOENCODING=utf-8 python quality_param_sweep.py)",
+      "Bash(PYTHONIOENCODING=utf-8 python compute_top_quality.py)",
+      "Bash(python compute_top_high_beta.py)",
+      "Bash(python high_beta_bt.py)",
+      "Bash(PYTHONIOENCODING=utf-8 python high_beta_bt.py)"
+    ]
+  }
+}

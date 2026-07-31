@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Source Hub | Code & Projects</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;700&display=swap');
+
+        :root {
+            --primary-color: #00ff41;
+            --secondary-color: #008f11;
+            --bg-dark: #050505;
+            --text-color: #e0e0e0;
+            --card-bg: rgba(10, 15, 10, 0.75);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Fira Code', monospace;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* Dual Canvas Setup */
+        #webgl-fluid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        #shader-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Layout & Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 1.5rem 3rem;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--secondary-color);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav h1 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Sections */
+        section {
+            padding: 8rem 3rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 3rem;
+            text-align: center;
+            border-bottom: 1px dashed var(--secondary-color);
+            display: inline-block;
+            padding-bottom: 0.5rem;
+            text-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
+        }
+
+        .title-container {
+            text-align: center;
+        }
+
+        /* 3D Tilted Cards - Project Showcase */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            perspective: 1000px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--secondary-color);
+            border-radius: 8px;
+            padding: 2rem;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .card:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .card-content {
+            transform: translateZ(40px);
+        }
+
+        .card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #aaa;
+            margin-bottom: 1.5rem;
+        }
+
+        .tags span {
+            background: rgba(0, 255, 65, 0.1);
+            color: var(--primary-color);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            border: 1px solid var(--secondary-color);
+        }
+
+        /* Highlights & Blog Grid */
+        .list-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .list-item {
+            background: rgba(10, 15, 10, 0.6);
+            border-left: 4px solid var(--primary-color);
+            padding: 1.5rem;
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .list-item:hover {
+            transform: translateX(10px);
+            background: rgba(0, 255, 65, 0.05);
+        }
+
+        .list-item h4 {
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .list-item span.date {
+            font-size: 0.8rem;
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dual Canvas Background -->
+    <canvas id="webgl-fluid"></canvas>
+    <canvas id="shader-bg"></canvas>
+
+    <nav>
+        <h1>&lt;OS_Hub /&gt;</h1>
+        <ul>
+            <li><a href="#projects">Showcase</a></li>
+            <li><a href="#highlights">Highlights</a></li>
+            <li><a href="#blog">Tech Blog</a></li>
+        </ul>
+    </nav>
+
+    <!-- Project Showcase -->
+    <section id="projects">
+        <div class="title-container">
+            <h2 class="section-title">Project Showcase</h2>
+        </div>
+        <div class="projects-grid">
+            <div class="card">
+                <div class="card-content">
+                    <h3>NeuralNet_Core</h3>
+                    <p>A lightweight, zero-dependency neural network library built entirely in C++ for edge devices. Optimized for memory efficiency.</p>
+                    <div class="tags">
+                        <span>C++</span>
+                        <span>AI</span>
+                        <span>Edge</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-content">
+                    <h3>Quantum_Router</h3>
+                    <p>An experimental API gateway implementing quantum-resistant encryption algorithms for next-gen secure microservices.</p>
+                    <div class="tags">
+                        <span>Go</span>
+                        <span>Security</span>
+                        <span>Web</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-content">
+                    <h3>Vortex_DB</h3>
+                    <p>Distributed, in-memory graph database designed to visualize complex data relationships in real-time node mapping.</p>
+                    <div class="tags">
+                        <span>Rust</span>
+                        <span>Database</span>
+                        <span>Graph</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Highlights & Technical Blog -->
+    <section id="highlights">
+        <div class="title-container">
+            <h2 class="section-title">Open Source Highlights</h2>
+        </div>
+        <div class="list-grid">
+            <div class="list-item">
+                <h4>Linux Kernel 6.8 Release Integration</h4>
+                <p>We've successfully merged our networking patch into the mainline kernel, improving packet processing throughput by 14%.</p>
+            </div>
+            <div class="list-item">
+                <h4>New Contributor Milestone</h4>
+                <p>Over 500 new developers have joined our decentralized indexing project this quarter alone.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="blog">
+        <div class="title-container">
+            <h2 class="section-title">Technical Blog</h2>
+        </div>
+        <div class="list-grid">
+            <div class="list-item">
+                <span class="date">JULY 29, 2026</span>
+                <h4>Optimizing WebGL Shaders for Low-Power GPUs</h4>
+                <p>A deep dive into reducing fragment shader overhead while maintaining complex visual fidelity like water ripples and lighting...</p>
+            </div>
+            <div class="list-item">
+                <span class="date">JULY 15, 2026</span>
+                <h4>The Architecture of Vortex_DB</h4>
+                <p>How we utilized Rust's ownership model to ensure thread-safe, lock-free graph traversals at scale...</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // --- 1. 3D Tilted Card Interaction ---
+        const cards = document.querySelectorAll('.card');
+        
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -15;
+                const rotateY = ((x - centerX) / centerX) * 15;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
+            });
+        });
+
+        // --- 2. WebGL Fluid Simulation Setup ---
+        const webglCanvas = document.getElementById('webgl-fluid');
+        const gl = webglCanvas.getContext('webgl');
+
+        const vsSource = `
+            attribute vec2 a_position;
+            void main() {
+                gl_Position = vec4(a_position, 0.0, 1.0);
+            }
+        `;
+
+        // Fractional Brownian Motion (FBM) shader to simulate smoky liquid
+        const fsSource = `
+            precision highp float;
+            uniform vec2 u_resolution;
+            uniform float u_time;
+            uniform vec2 u_mouse;
+
+            float hash(vec2 p) {
+                return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+            }
+
+            float noise(vec2 p) {
+                vec2 i = floor(p);
+                vec2 f = fract(p);
+                f = f * f * (3.0 - 2.0 * f);
+                return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+                           mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+            }
+
+            float fbm(vec2 p) {
+                float f = 0.0; float amp = 0.5;
+                for (int i = 0; i < 5; i++) {
+                    f += amp * noise(p); p *= 2.0; amp *= 0.5;
+                }
+                return f;
+            }
+
+            void main() {
+                vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+                uv.x *= u_resolution.x / u_resolution.y;
+
+                vec2 mouse = u_mouse / u_resolution.xy;
+                mouse.x *= u_resolution.x / u_resolution.y;
+
+                // Base fluid movement
+                vec2 q = vec2(fbm(uv + u_time * 0.05), fbm(uv + vec2(1.0)));
+                vec2 r = vec2(fbm(uv + 1.0 * q + vec2(1.7, 9.2) + u_time * 0.15),
+                              fbm(uv + 1.0 * q + vec2(8.3, 2.8) + u_time * 0.12));
+
+                // Mouse interaction - pushes the fluid
+                float dist = distance(uv, mouse);
+                float interaction = exp(-dist * 8.0);
+                r += interaction * 0.3;
+
+                float f = fbm(uv + r);
+
+                // Matrix / Hacker Green color palette
+                vec3 color = mix(
+                    vec3(0.0, 0.0, 0.0),      // Deep background (Black)
+                    vec3(0.0, 0.15, 0.02),    // Dark fluid green
+                    clamp(f * 2.0, 0.0, 1.0)
+                );
+
+                color = mix(
+                    color,
+                    vec3(0.0, 0.8, 0.2),      // Bright core green
+                    clamp(length(q), 0.0, 1.0)
+                );
+
+                color = mix(
+                    color,
+                    vec3(0.5, 1.0, 0.6),      // Highlights
+                    clamp(length(r.x), 0.0, 1.0)
+                );
+
+                // Modulate depth and add mouse glow
+                color *= (1.5 * f * f * f + 0.6 * f * f + 0.5 * f);
+                color += vec3(0.0, 0.6, 0.2) * interaction * 0.4;
+
+                gl_FragColor = vec4(color, 1.0);
+            }
+        `;
+
+        function createShader(gl, type, source) {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            return shader;
+        }
+
+        let program, positionLocation, timeLocation, resolutionLocation, mouseLocation;
+
+        if (gl) {
+            const vertexShader = createShader(gl, gl.VERTEX_SHADER, vsSource);
+            const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
+
+            program = gl.createProgram();
+            gl.attachShader(program, vertexShader);
+            gl.attachShader(program, fragmentShader);
+            gl.linkProgram(program);
+            gl.useProgram(program);
+
+            const positionBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            const positions = [
+                -1.0, -1.0,  1.0, -1.0, -1.0,  1.0,
+                -1.0,  1.0,  1.0, -1.0,  1.0,  1.0,
+            ];
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+            positionLocation = gl.getAttribLocation(program, "a_position");
+            gl.enableVertexAttribArray(positionLocation);
+            gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+            timeLocation = gl.getUniformLocation(program, "u_time");
+            resolutionLocation = gl.getUniformLocation(program, "u_resolution");
+            mouseLocation = gl.getUniformLocation(program, "u_mouse");
+        }
+
+        // --- 3. 2D Canvas Deep Code Grid ---
+        const canvas = document.getElementById('shader-bg');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let mouse = { x: -1000, y: -1000 };
+        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>/\\{}[]".split("");
+        
+        const fontSize = 16;
+        let columns, rows;
+        let grid = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            
+            if (gl) {
+                webglCanvas.width = width;
+                webglCanvas.height = height;
+                gl.viewport(0, 0, width, height);
+            }
+
+            columns = Math.floor(width / fontSize);
+            rows = Math.floor(height / fontSize);
+            initGrid();
+        }
+
+        function initGrid() {
+            grid = [];
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < columns; x++) {
+                    grid.push({
+                        x: x * fontSize,
+                        y: y * fontSize,
+                        originX: x * fontSize,
+                        originY: y * fontSize,
+                        char: characters[Math.floor(Math.random() * characters.length)],
+                        phase: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+        }
+
+        window.addEventListener('resize', resize);
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+        
+        window.addEventListener('mouseout', () => {
+            mouse.x = -1000;
+            mouse.y = -1000;
+        });
+
+        resize();
+
+        let timeText = 0;
+        
+        function animate(timeRaw) {
+            // Render WebGL Background
+            if (gl) {
+                gl.uniform1f(timeLocation, timeRaw * 0.001);
+                gl.uniform2f(resolutionLocation, width, height);
+                // Invert Y axis for WebGL coordinate space
+                gl.uniform2f(mouseLocation, mouse.x, height - mouse.y); 
+                gl.drawArrays(gl.TRIANGLES, 0, 6);
+            }
+
+            // Fade 2D canvas to transparent (allows WebGL fluid to show through trails)
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+            ctx.fillRect(0, 0, width, height);
+            ctx.globalCompositeOperation = 'source-over';
+            
+            ctx.font = `${fontSize}px 'Fira Code', monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            timeText += 0.05;
+
+            for (let i = 0; i < grid.length; i++) {
+                let p = grid[i];
+                
+                let dx = mouse.x - p.originX;
+                let dy = mouse.y - p.originY;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                
+                let maxDist = 200;
+                let rippleX = 0;
+                let rippleY = 0;
+                let opacity = 0.1;
+                
+                if (distance < maxDist) {
+                    let force = (maxDist - distance) / maxDist;
+                    let wave = Math.sin(distance * 0.05 - timeText * 2);
+                    
+                    rippleX = (dx / distance) * wave * force * 20;
+                    rippleY = (dy / distance) * wave * force * 20;
+                    
+                    opacity = 0.1 + (force * 0.9);
+                    
+                    if (Math.random() < 0.1) {
+                        p.char = characters[Math.floor(Math.random() * characters.length)];
+                    }
+                }
+                
+                let ambientX = Math.sin(p.phase + timeText * 0.5) * 2;
+                let ambientY = Math.cos(p.phase + timeText * 0.5) * 2;
+
+                p.x = p.originX + rippleX + ambientX;
+                p.y = p.originY + rippleY + ambientY;
+                
+                ctx.fillStyle = `rgba(0, 255, 65, ${opacity})`;
+                ctx.fillText(p.char, p.x + fontSize/2, p.y + fontSize/2);
+            }
+            
+            requestAnimationFrame(animate);
+        }
+
+        requestAnimationFrame(animate);
+    </script>
+</body>
+</html>
