@@ -23,7 +23,9 @@
       "Bash(PYTHONIOENCODING=utf-8 python compute_top_quality.py)",
       "Bash(python compute_top_high_beta.py)",
       "Bash(python high_beta_bt.py)",
-      "Bash(PYTHONIOENCODING=utf-8 python high_beta_bt.py)"
+      "Bash(PYTHONIOENCODING=utf-8 python high_beta_bt.py)",
+      "PowerShell(Tee-Object *)",
+      "PowerShell(python \"$env:CLAUDE_JOB_DIR\\\\tmp\\\\impact.py\")"
     ]
   }
 }
